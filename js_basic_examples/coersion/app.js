@@ -1,16 +1,15 @@
-console.log(!!2);
+console.log([] + 1); // '' + 1 => '' + '1' => '1'
+console.log([1, 2] + 'hi'); // '1,2' + 'hi' => '1,2hi'
+// 1. Step: toPrimitive() (internal method)
+// 2. Step: toString()
 
-const userInput = 'my name';
-const hasEnteredValidInput = !!userInput;
+console.log([1, 2] == 0); // NaN == 0 => false
+// console.log(Number([1, 2].toString()));
+console.log([] == 0); // '' == 0 => 0 == 0 => true
+console.log([] === 0);
 
-if (userInput) {
-  // ...
-}
-
-const age = '31';
-// const numberAge = Number(age);
-const numberAge = +age;
-
-console.log(numberAge + 1);
-
-const stringAge = numberAge + ''; // String(numberAge), numberAge.toString()
+// console.log({}.toString());
+console.log({} + 1); // '[object Object]' + 1 => '[object Object]1'
+console.log({} + 'hi');
+console.log({} + []); // '[object Object]' + '' => '[object Object]'
+console.log({} == []); // '[object Object]' == ''
