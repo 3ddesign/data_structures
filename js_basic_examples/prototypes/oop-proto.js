@@ -25,3 +25,25 @@ Employee.prototype.sayGoodbye = function() {
 Employee.prototype = {};
 
 emp1.sayGoodbye();
+
+class Human {
+  wave() {
+    console.log('Waving...');
+  }
+}
+
+const h1 = new Human();
+const h2 = new Human();
+const h3 = new Human();
+console.log(h1);
+
+// class Person extends Human {
+//   constructor(n) {
+//     super();
+//     this.name = n;
+//   }
+// }
+
+// const p1 = new Person('Max');
+// console.log(p1);
+// p1.wave();
