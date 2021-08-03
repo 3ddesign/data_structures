@@ -6,8 +6,7 @@ class HashTable {
 
   hash(key) {
     let hash = 0;
-    for (const char of key) {
-      
+    for (const char of key) {  
       hash += char.charCodeAt(0);
     }
     return hash % this.size;
