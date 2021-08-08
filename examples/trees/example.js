@@ -59,6 +59,20 @@ class Node {
       existingChildNode.removeNode(segments.slice(1).join('/'));
     }
   }
+
+  find(value) {
+    console.log(this);
+    // Depth-first
+    for (const child of this.children) {
+      if (child.value === value) {
+        return child;
+      }
+      const nestedChildNode = child.find(value);
+      if (nestedChildNode) {
+        return nestedChildNode;
+      }
+    }
+  }
 }
 
 class Tree {
@@ -73,15 +87,24 @@ class Tree {
   remove(path) {
     this.root.removeNode(path);
   }
+
+  find(value) {
+    if (this.root.value === value) {
+      return this.root;
+    }
+    return this.root.find(value);
+  }
 }
 
 const filesystem = new Tree('/');
 filesystem.add('documents');
-filesystem.add('documents/personal/tax.docx');
+filesystem.add('documents/myData/tax.docx');
+filesystem.add('personal');
 filesystem.add('games/cod.exe');
 filesystem.add('games/cod2.exe');
 filesystem.remove('games/cod.exe');
 // filesystem.remove('games/cod3.exe');
 // filesystem.remove('gamessssss/cod2.exe');
+console.log(filesystem.find('personal'));
 
 console.log(filesystem);
