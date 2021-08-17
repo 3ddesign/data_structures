@@ -62,11 +62,13 @@ class Node {
 
   find(value) {
     console.log(this);
-    // Depth-first
+    // Breadth-first
     for (const child of this.children) {
       if (child.value === value) {
         return child;
       }
+    }
+    for (const child of this.children) {
       const nestedChildNode = child.find(value);
       if (nestedChildNode) {
         return nestedChildNode;
