@@ -1,112 +1,144 @@
 class Node {
-  constructor(value, parentNode = null) {
-    this.children = [];
+  constructor(value) {
     this.value = value;
-    this.parent = parentNode;
+    this.left = null;
+    this.right = null;
+    this.parent = null;
   }
 
-  addNode(value) {
-    const segments = value.split('/');
-
-    if (segments.length === 0) {
+  add(value) {
+    if (this.value === null) {
+      this.value = value;
       return;
     }
-    if (segments.length === 1) {
-      const node = new Node(segments[0], this);
-      this.children.push(node);
-      return { node: node, index: this.children.length - 1 };
-    }
-    const existingChildNode = this.children.find(
-      (child) => child.value === segments[0]
-    );
 
-    if (existingChildNode) {
-      existingChildNode.addNode(segments.slice(1).join('/'));
+    if (this.value < value) {
+      if (this.right) {
+        this.right.add(value);
+        return;
+      }
+      const newNode = new Node(value);
+      newNode.parent = this;
+      this.right = newNode;
+      return;
+    }
+
+    if (this.value > value) {
+      if (this.left) {
+        this.left.add(value);
+        return;
+      }
+      const newNode = new Node(value);
+      newNode.parent = this;
+      this.left = newNode;
+      return;
+    }
+  }
+
+  remove(value) {
+    const identifiedNode = this.find(value);
+
+    if (!identifiedNode) {
+      throw new Error('Could not find node with that value');
+    }
+
+    if (!identifiedNode.left && !identifiedNode.right) {
+      const identifiedParent = identifiedNode.parent;
+      identifiedParent.removeChild(identifiedNode);
+      return;
+    }
+
+    if (identifiedNode.left && identifiedNode.right) {
+      const nextBiggerNode = identifiedNode.right.findNext();
+      if (nextBiggerNode.value === identifiedNode.right.value) {
+        // this.remove(nextBiggerNode.value);
+        identifiedNode.right = nextBiggerNode.right;
+        identifiedNode.value = nextBiggerNode.value;
+        identifiedNode.left.parent = nextBiggerNode;
+      } else {
+        identifiedNode.value = identifiedNode.right.value;
+        identifiedNode.right = identifiedNode.right.right;
+        identifiedNode.left.parent = identifiedNode;
+      }
     } else {
-      const node = new Node(segments[0], this);
-      node.addNode(segments.slice(1).join('/'));
-      this.children.push(node);
-      return { node: node, index: this.children.length - 1 };
+      const childNode = identifiedNode.left || identifiedNode.right;
+
+      identifiedNode.left = childNode.left;
+      identifiedNode.right = childNode.right;
+      identifiedNode.value = childNode.value;
     }
   }
 
-  removeNode(value) {
-    const segments = value.split('/');
-
-    if (segments.length === 0) {
+  removeChild(node) {
+    if (this.left && this.left === node) {
+      this.left = null;
       return;
     }
-    if (segments.length === 1) {
-      const existingNodeIndex = this.children.findIndex(
-        (child) => child.value === segments[0]
-      );
-      if (existingNodeIndex < 0) {
-        throw new Error('Could not find matching value!');
-      }
-      this.children.splice(existingNodeIndex, 1);
-    }
-    if (segments.length > 1) {
-      const existingChildNode = this.children.find(
-        (child) => child.value === segments[0]
-      );
-
-      if (!existingChildNode) {
-        throw new Error(
-          'Could not find matching path! Path segment: ' + segments[0]
-        );
-      }
-
-      existingChildNode.removeNode(segments.slice(1).join('/'));
+    if (this.right && this.right === node) {
+      this.right = null;
+      return;
     }
   }
 
   find(value) {
-    console.log(this);
-    // Breadth-first
-    for (const child of this.children) {
-      if (child.value === value) {
-        return child;
-      }
+    if (this.value === value) {
+      return this;
     }
-    for (const child of this.children) {
-      const nestedChildNode = child.find(value);
-      if (nestedChildNode) {
-        return nestedChildNode;
-      }
+
+    if (this.value < value && this.right) {
+      return this.right.find(value);
     }
+
+    if (this.value > value && this.left) {
+      return this.left.find(value);
+    }
+  }
+
+  findNext() {
+    if (!this.left) {
+      return this;
+    }
+
+    return this.left.findNext();
   }
 }
 
 class Tree {
-  constructor(rootValue) {
-    this.root = new Node(rootValue);
+  constructor() {
+    this.root = new Node(null);
   }
 
-  add(path) {
-    this.root.addNode(path);
+  add(value) {
+    this.root.add(value);
   }
 
-  remove(path) {
-    this.root.removeNode(path);
+  remove(value) {
+    this.root.remove(value);
   }
 
   find(value) {
-    if (this.root.value === value) {
-      return this.root;
-    }
     return this.root.find(value);
   }
 }
 
-const filesystem = new Tree('/');
-filesystem.add('documents');
-filesystem.add('documents/myData/tax.docx');
-filesystem.add('personal');
-filesystem.add('games/cod.exe');
-filesystem.add('games/cod2.exe');
-filesystem.remove('games/cod.exe');
-// filesystem.remove('games/cod3.exe');
-// filesystem.remove('gamessssss/cod2.exe');
-console.log(filesystem.find('personal'));
+const tree = new Tree();
+tree.add(10);
+tree.add(5);
+tree.add(2);
+tree.add(6);
+tree.add(20);
+tree.add(25);
+tree.add(23);
+tree.add(28);
+tree.add(27);
+tree.add(29);
+tree.add(31);
+tree.add(39);
+tree.remove(39);
+tree.remove(20);
+tree.remove(25);
 
-console.log(filesystem);
+console.log(tree);
+console.log(tree.find(5))
+console.log(tree.find(7))
+console.log(tree.find(39))
